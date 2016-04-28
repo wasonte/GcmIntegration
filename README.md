@@ -1,2 +1,2 @@
 # GcmIntegration
-Solution for Google Cloud Messagin with an application provided by Google to receive Push
+Solution for Google Cloud Messaging with an application provided by Google to test the module
