@@ -75,6 +75,7 @@ public class GcmRegistrationIntentService extends IntentService {
      */
     private boolean registerInServer(boolean register, String token) {
         // Add custom implementation, as needed.
+        // TODO
         return true;
     }
 
