@@ -34,9 +34,6 @@ import com.google.android.gms.common.GoogleApiAvailability;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    private static final String TAG = "MainActivity";
-
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private TextView mInformationTextView;
 
@@ -48,60 +45,41 @@ public class MainActivity extends AppCompatActivity {
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                SharedPreferences sharedPreferences =
-                        PreferenceManager.getDefaultSharedPreferences(context);
 
-                        if (intent.getBooleanExtra("register", true)){
-
-                            boolean sentToken = sharedPreferences
-                                    .getBoolean(GcmPreferences.SENT_TOKEN_TO_SERVER, false);
-                            if (sentToken) {
-                                mInformationTextView.setText(getString(R.string.gcm_send_message));
-                            } else {
-                                mInformationTextView.setText(getString(R.string.token_error_message));
-                            }
-
-                        } else {
-
-                            boolean deletedToken = sharedPreferences
-                                    .getBoolean(GcmPreferences.DELETED_TOKEN_FROM_SERVER, false);
-                            if (deletedToken) {
-                                mInformationTextView.setText("Token deleted from server");
-                            } else {
-                                mInformationTextView.setText("Error deleting token from");
-                            }
-                        }
-
+                   if(intent.getBooleanExtra("register", true)){
+                       // Register button was pushed
+                       if (MyGcmManager.getInstance().getRegisteredInGCM()){
+                           mInformationTextView.setText(getString(R.string.gcm_send_message));
+                       } else {
+                           mInformationTextView.setText(getString(R.string.token_error_message));
+                       }
+                   } else {
+                       // unRegister button was pushed
+                       if (!MyGcmManager.getInstance().getRegisteredInGCM()){
+                           mInformationTextView.setText("Token deleted from server");
+                       } else {
+                           mInformationTextView.setText("Error deleting token from");
+                       }
+                   }
             }
         };
-
         mInformationTextView = (TextView) findViewById(R.id.informationTextView);
 
     }
 
     public void clickRegister(View v){
-        if (checkPlayServices()) {
-            // Start IntentService to register this application with GCM.
-            Intent intent = new Intent(this, GcmRegistrationIntentService.class);
-            intent.putExtra("register",true);
-            startService(intent);
-        }
+        MyGcmManager.getInstance().registerGCM(this, true);
     }
 
     public void clickUnregister(View v){
-        if (checkPlayServices()) {
-            // Start IntentService to register this application with GCM.
-            Intent intent = new Intent(this, GcmRegistrationIntentService.class);
-            intent.putExtra("register",false);
-            startService(intent);
-        }
+        MyGcmManager.getInstance().registerGCM(this, false);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-                new IntentFilter(GcmPreferences.REGISTRATION_COMPLETE));
+                new IntentFilter(MyGcmManager.GCM_REGISTRATION));
     }
 
     @Override
@@ -109,26 +87,4 @@ public class MainActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
         super.onPause();
     }
-
-    /**
-     * Check the device to make sure it has the Google Play Services APK. If
-     * it doesn't, display a dialog that allows users to download the APK from
-     * the Google Play Store or enable it in the device's system settings.
-     */
-    private boolean checkPlayServices() {
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (apiAvailability.isUserResolvableError(resultCode)) {
-                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-                        .show();
-            } else {
-                Log.i(TAG, "This device is not supported.");
-                finish();
-            }
-            return false;
-        }
-        return true;
-    }
-
 }

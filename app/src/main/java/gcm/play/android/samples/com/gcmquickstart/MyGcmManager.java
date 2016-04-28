@@ -15,7 +15,6 @@ import com.google.android.gms.common.GoogleApiAvailability;
 public class MyGcmManager {
 
     public static final String GCM_REGISTRATION = "GcmRegistration";
-    public static final String GCM_UPDATE_SYNC = "GcmUpdateSync";
 
     // Singleton
     private static MyGcmManager gcmInstance = new MyGcmManager();
@@ -65,6 +64,7 @@ public class MyGcmManager {
         if (resultCode != ConnectionResult.SUCCESS) {
             if (apiAvailability.isUserResolvableError(resultCode)) {
                 AlertDialog dialog =  (AlertDialog)apiAvailability.getErrorDialog((Activity)ctx, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST);
+                // Change the title and message if app < API 14
                 //dialog.setTitle(ctx.getResources().getString(R.string.str_login_google_services_title));
                 //dialog.setMessage(ctx.getResources().getString(R.string.str_login_google_services_text));
                 dialog.show();
