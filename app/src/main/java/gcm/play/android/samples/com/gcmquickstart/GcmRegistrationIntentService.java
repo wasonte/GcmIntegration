@@ -37,7 +37,10 @@ public class GcmRegistrationIntentService extends IntentService {
         registerGCM(intent.getBooleanExtra("register", true));
     }
 
-
+    /**
+     * register == true -> register in GCM
+     * register == false -> unRegister from GCM
+     */
     private void registerGCM(boolean register){
         try {
 
