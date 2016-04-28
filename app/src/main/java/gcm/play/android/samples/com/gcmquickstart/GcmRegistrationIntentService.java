@@ -51,6 +51,7 @@ public class GcmRegistrationIntentService extends IntentService {
                     MyGcmManager.getInstance().setRegisteredInGCM(true);
                 }
             } else {
+                instanceID.deleteInstanceID();
                 Log.d("GcmRegistrationService", "GCM Token for deletion: "  + token);
                 if(registerInServer(false, token)){
                     MyGcmManager.getInstance().setRegisteredInGCM(false);
